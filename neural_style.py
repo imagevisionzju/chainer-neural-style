@@ -71,15 +71,20 @@ xp = np if args.gpu < 0 else cuda.cupy
 #loading content image
 print 'loading content...'
 content_b = open_and_resize_image(args.content_image,args.maxWidthHeightContent,vgg)#get_image_to_xpArray(args.content_image,args.maxWidthHeight,args.batchsize)
-feature_c = vgg(Variable(cuda.to_gpu(content_b,args.gpu), volatile=True))
+if args.gpu >= 0:
+    content_b = cuda.to_gpu(content_b,args.gpu)
+feature_c = vgg(Variable(content_b, volatile=True))
 print content_b.shape
 
 #loading style image
 print 'loading style...'
 style_b = open_and_resize_image(args.style_image,args.maxWidthHeightStyle,vgg)#get_image_to_xpArray(args.style_image,args.maxWidthHeight,args.batchsize)
-feature_s = vgg(Variable(cuda.to_gpu(style_b,args.gpu), volatile=True))
+if args.gpu >= 0:
+    style_b = cuda.to_gpu(style_b,args.gpu)
+feature_s = vgg(Variable(style_b, volatile=True))
 gram_s = [gram_matrix(y) for y in feature_s]
 print style_b.shape
+
 
 #init with content image (or random noise),same shape with content_b
 optLink=chainer.Link(x=content_b.shape)
@@ -89,6 +94,7 @@ optLink.x.data[:] = xp.asarray(content_b)
 #O = LBFGS(args.lr)
 O = optimizers.Adam(alpha=args.lr)
 O.setup(optLink)
+
 
 print 'begen ...'
 start = time.time()
