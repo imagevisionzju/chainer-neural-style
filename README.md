@@ -14,3 +14,11 @@ BEFORE RUNNING:
 USAGE:
 
   python neural_style.py
+  
+  
+  
+Citation:
+
+  https://github.com/jcjohnson/neural-style
+  
+  https://github.com/yusuketomoto/chainer-fast-neuralstyle
